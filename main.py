@@ -8,10 +8,19 @@ from pandas import *
 from random import *
 
 def correct():
-    canvas.itemconfig(french, text=new_word())
-
+    global current_word
+    current_word = new_word()
+    canvas.itemconfig(word, text=current_word["French"], fil="black")
+    canvas.itemconfig(img, image=cardf_img)
+    canvas.itemconfig(title, text="French", fill="black")
+    window.after(3000, updatecanvas)
 def wrongdef():
-    canvas.itemconfig(french, text=new_word())
+    global current_word
+    current_word = new_word()
+    canvas.itemconfig(word, text=current_word["French"], fill="black")
+    canvas.itemconfig(img, image=cardf_img)
+    canvas.itemconfig(title, text="French", fill="black")
+    window.after(3000, updatecanvas)
 
 #picking random words
 def new_word():
@@ -19,7 +28,16 @@ def new_word():
     dict123 = choice(data.to_dict(orient="records"))
     English_word = dict123["English"]
     french_word = dict123["French"]
-    return french_word
+
+    return dict123
+
+def updatecanvas():
+    canvas.itemconfig(img, image=cardb_img)
+    canvas.itemconfig(title, text="English", fill="white")
+    canvas.itemconfig(word, text=current_word["English"], fill="white")
+
+
+current_word = new_word()
 
 #creating image
 
@@ -30,11 +48,11 @@ window.config(pady=50, padx=50, background=BACKGROUND_COLOR)
 
 canvas = Canvas(width=800, height=526, highlightthickness=0, background=BACKGROUND_COLOR)
 cardf_img = PhotoImage(file="images/card_front.png")
-canvas.create_image(400, 263, image=cardf_img)
-canvas.create_text(400, 150, text="French", font=("Ariel", 40, "italic"))
-french = canvas.create_text(400, 263, text=new_word(), font=("Ariel", 60, "bold"))
+cardb_img = PhotoImage(file="images/card_back.png")
+img = canvas.create_image(400, 263, image=cardf_img)
+title = canvas.create_text(400, 150, text="French", font=("Ariel", 40, "italic"))
+word = canvas.create_text(400, 263, text=current_word["French"], font=("Ariel", 60, "bold"))
 canvas.grid(column=1, row=1, columnspan=2)
-
 
 # creating buttons
 wrong = PhotoImage(file="images/wrong.png")
@@ -44,5 +62,7 @@ button.grid(column=1, row=2)
 right = PhotoImage(file="images/right.png")
 button2 = Button(image=right, highlightthickness=0, command=correct)
 button2.grid(column=2, row=2)
+
+window.after(3000, updatecanvas)
 
 window.mainloop()
